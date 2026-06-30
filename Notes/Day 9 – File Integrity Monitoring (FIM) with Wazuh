@@ -1,0 +1,127 @@
+# 📘 Day 9 – File Integrity Monitoring (FIM) with Wazuh
+
+## 🧭 Objective
+The objective of this lab was to configure and analyze File Integrity Monitoring (FIM) using Wazuh. The goal was to detect file changes in real time, investigate generated alerts, and perform SOC-style analysis including risk assessment and MITRE ATT&CK mapping.
+
+---
+
+## 🖥️ Lab Environment
+- OS: Kali Linux  
+- SIEM: Wazuh Agent v4.7.3  
+- Monitoring Tool: Wazuh Syscheck (FIM)  
+- Monitoring Scope: `/home/sheik/fim-lab`, `/etc/passwd` (simulated incident)  
+- User: root / sheik  
+
+---
+
+## 📌 FIM Overview
+
+File Integrity Monitoring (FIM) is a security capability that tracks changes to files and directories in real time or at scheduled intervals.
+
+Wazuh FIM detects:
+- File creation
+- File modification
+- File deletion
+- Permission changes
+- Ownership changes
+
+It is commonly used to detect:
+- Unauthorized system changes
+- Malware persistence
+- Privilege escalation attempts
+- Configuration tampering
+
+---
+
+## 🚨 Generated Alerts
+
+### 1. Lab Test Alert
+- **File:** `/home/sheik/fim-lab/test.txt`  
+- **Action:** Modified  
+- **Type:** Benign test event  
+- **Purpose:** Validate FIM functionality  
+
+---
+
+### 2. Critical Simulated Incident
+- **File:** `/etc/passwd`  
+- **User:** root  
+- **Time:** 14:20  
+- **Rule Level:** 10 (Critical)  
+- **Action:** Modified  
+
+---
+
+## 🔍 Investigation
+
+### Key Steps Performed:
+- Verified FIM alert in Wazuh logs
+- Identified affected file paths
+- Classified event type (create/modify/delete)
+- Reviewed system logs and authentication activity
+- Assessed whether activity was expected or malicious
+- Determined escalation requirements
+
+### Findings:
+- Lab file modification in `/home/sheik/fim-lab` was expected and safe
+- `/etc/passwd` modification is highly critical and potentially malicious
+- Root-level activity requires validation despite elevated privileges
+
+---
+
+## ⚠️ Risk Assessment
+
+| Event | Risk Level | Justification |
+|------|------------|---------------|
+| `/home/sheik/fim-lab/test.txt` modified | Low | Controlled lab test |
+| `/etc/passwd` modified | Critical | Core authentication file, potential system compromise |
+
+### Key Risks:
+- Unauthorized user creation
+- Privilege escalation (UID 0 attacks)
+- System persistence mechanisms
+- Authentication bypass
+- System instability
+
+---
+
+## 🎯 MITRE ATT&CK Mapping
+
+| Tactic | Technique | Description |
+|--------|-----------|-------------|
+| Persistence / Privilege Escalation | Account Manipulation (T1098) | Modification of system accounts via `/etc/passwd` |
+| Defense Evasion | Valid Accounts (T1078) | Use of legitimate credentials (root) to perform changes |
+
+---
+
+## 🧠 Analyst Recommendation
+
+### For Lab Event:
+- No action required (test environment only)
+
+### For Critical Incident (/etc/passwd):
+- Immediate escalation to Tier 2/Incident Response team
+- Isolate affected host
+- Review authentication logs (`/var/log/auth.log`)
+- Validate root activity legitimacy
+- Check for unauthorized user creation or UID 0 entries
+- Preserve forensic evidence before remediation
+
+---
+
+## 📊 Lessons Learned
+
+- FIM is a powerful tool for detecting unauthorized file changes
+- Not all root activity is safe—context is critical
+- System files like `/etc/passwd` are high-value attack targets
+- SOC analysts must differentiate between lab activity and real threats
+- Proper escalation depends on system criticality, not just alert generation
+- MITRE ATT&CK helps standardize threat classification
+
+---
+
+## 🚀 Conclusion
+
+This lab demonstrated real-world File Integrity Monitoring using Wazuh. It reinforced SOC analyst skills in alert triage, risk assessment, and incident response decision-making. The exercise highlights the importance of monitoring critical system files and maintaining strict visibility over authentication-related configurations.
+
+---
